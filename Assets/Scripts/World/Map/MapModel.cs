@@ -3,34 +3,53 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
+using Assets.Utils;
 
 namespace Assets.World.Map
 {
     [Serializable]
     public class MapModel
     {
-        public int MapWidth;
-        public int MapHeight;
-        public int CellSize;
+        public int Cols;
+        public int Rows;
+		public float CellSize;
 
         [SerializeField]
         public CellModel[,] MapCells;
 
-        public MapModel()
-        {
-            
-        }
+		public void Init(int cols, int rows, float cellSize)
+		{
+			Cols = cols;
+			Rows = rows;
+			CellSize = cellSize;
 
-        public void Init(int width, int height, int cells)
-        {
-            MapHeight = height;
-            MapWidth = width;
-            CellSize = cells;
+			MapCells = CreateCellsMap (Cols, Rows);
+			FillMapWithCells (MapCells);
+		}
 
-            MapCells = CreateCellsMap(MapWidth/CellSize, MapHeight/CellSize);
-            FillMapWithCells(MapCells);
-        }
+		public CellModel GetCellByPosition(Point position)
+		{
+			var cid = (int)(position.x / Cols);
+			var rid = (int)(position.y / Rows);
+			return MapCells [cid, rid];
+		}
 
+
+		public CellModel GetRandomCell()
+		{
+			var rnd = new System.Random();
+			var cid = rnd.Next (MapCells.GetLength (0));
+			var rid = rnd.Next (MapCells.GetLength (1));
+			return MapCells[cid, rid];
+		}
+
+		public Point GetRandomPoint()
+		{
+			var rnd = new System.Random();
+			var cid = rnd.Next (MapCells.GetLength (0));
+			var rid = rnd.Next (MapCells.GetLength (1));
+			return MapCells[cid, rid].Position;
+		}
 
         public List<CellModel> GetPath(CellModel start, CellModel end)
         {

@@ -14,7 +14,6 @@ namespace Assets.Scripts.World.WorldObjects
         private float _gridX;
         private float _gridY;
         private string _shipAsset;
-        private List<ObjectModelBase> _crew;
 
 
     }

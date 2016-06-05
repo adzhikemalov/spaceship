@@ -9,7 +9,7 @@ public class Game : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
-	    _world = new WorldModel {MapModel = new MapModel()};
+	    _world = new WorldModel {WorldMap = new MapModel()};
 	}
 
 	void Update () {

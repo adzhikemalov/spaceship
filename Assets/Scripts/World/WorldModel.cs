@@ -1,13 +1,14 @@
-﻿    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Assets.Utils;
 using Assets.World.WorldObjects;
+using Assets.World.Map;
 
 namespace Assets.World
 {
     public class WorldModel
     {
         public List<ObjectModelBase> WorldObjects;
-        public Map.MapModel MapModel;
+        public MapModel WorldMap;
         public event ParameterHandler<MovingModelBase> MovingObjectCreated;
 
         public WorldModel()

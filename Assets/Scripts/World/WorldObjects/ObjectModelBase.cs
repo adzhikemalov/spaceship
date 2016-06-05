@@ -11,9 +11,10 @@ namespace Assets.World.WorldObjects
         public float Y {
             get { return Position.y; }
         }
+		public WorldModel World{get { return _world; }}
 
         public Point Position; 
-        private readonly WorldModel _world;
+		protected readonly WorldModel _world;
 
         public ObjectModelBase(WorldModel world, float x, float y)
         {

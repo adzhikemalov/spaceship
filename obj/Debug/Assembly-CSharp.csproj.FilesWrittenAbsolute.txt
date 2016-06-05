@@ -1,0 +1,13 @@
+/Users/plariumtest/spaceship/Temp/bin/Debug/UnityEngine.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/UnityEditor.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/UnityEngine.UI.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/UnityEngine.Networking.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/Mono.Cecil.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/Unity.SerializationLogic.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/Unity.DataContract.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/Unity.UNetWeaver.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
+/Users/plariumtest/spaceship/Temp/bin/Debug/Unity.CecilTools.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/Mono.Cecil.Pdb.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/Mono.Cecil.Mdb.dll
