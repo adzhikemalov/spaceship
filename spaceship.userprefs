@@ -1,12 +1,40 @@
-﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Game.cs">
+﻿<Properties StartupItem="Assembly-CSharp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Editor/ShipEditor.cs">
     <Files>
-      <File FileName="Assets/Scripts/Game.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Entities/Ship/Ship.cs" Line="10" Column="46" />
-      <File FileName="Assets/Scripts/Entities/Ship/ShipGrid.cs" Line="18" Column="41" />
-      <File FileName="Assets/Scripts/Entities/Ship/ShipObject.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/World/Map/MapModel.cs" Line="18" Column="9" />
+      <File FileName="Assets/Scripts/Editor/ShipEditor.cs" Line="183" Column="4" />
+      <File FileName="Assets/Scripts/World/Map/CellModel.cs" Line="12" Column="2" />
+      <File FileName="Assets/Scripts/World/WorldModel.cs" Line="17" Column="10" />
+      <File FileName="Assets/Scripts/Editor/OutputNode.cs" Line="1" Column="1" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="spaceship" expanded="True">
+            <Node name="Assembly-CSharp" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="World" expanded="True">
+                  <Node name="Map" expanded="True" />
+                </Node>
+              </Node>
+            </Node>
+            <Node name="Assembly-CSharp-Editor" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="Editor" expanded="True">
+                  <Node name="ShipEditor.cs" selected="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.NUnit.TestPad">
+        <State name="__root__">
+          <Node name="spaceship" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

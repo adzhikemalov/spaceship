@@ -10,6 +10,7 @@ namespace Assets.World.Map
     [Serializable]
     public class MapModel
     {
+		public static bool EnableDiagonalMovement;
         public int Cols;
         public int Rows;
 		public float CellSize;
@@ -29,8 +30,8 @@ namespace Assets.World.Map
 
 		public CellModel GetCellByPosition(Point position)
 		{
-			var cid = (int)(position.x / Cols);
-			var rid = (int)(position.y / Rows);
+			var cid = (int)(position.x / CellSize);
+			var rid = (int)(position.y / CellSize);
 			return MapCells [cid, rid];
 		}
 
@@ -108,24 +109,28 @@ namespace Assets.World.Map
         private static List<CellModel> GetNeighbours(CellModel currentCell, CellModel[,] cells)
         {
             var result = new List<CellModel>();
+			int dx, dy;
+			int px, py;
+			for (int i = 0; i < 9; i++) {
+				if (i == 4)
+					continue;
+				if (!EnableDiagonalMovement) {
+					if (i == 0 || i == 2 || i == 6 || i == 8)
+						continue;
+				}
+				dx = (i % 3) - 1;
+				dy = (i / 3) - 1;
+				px = (int)currentCell.Position.x + dx;
+				py = (int)currentCell.Position.y + dy;
 
-            for (int i = 0; i < 9; i++)
-            {
-                if (i == 4) continue;
-                var dx = (i%3) - 1;
-                var dy = (i/3) - 1;
-                var px = currentCell.Position.x + dx;
-                var py = currentCell.Position.y + dy;
+				if (px < 0 || px >= cells.GetLength (0))
+					continue;
+				if (py < 0 || py >= cells.GetLength (1))
+					continue;
 
-                if (px < 0 || px >= cells.GetLength(0))
-                    continue;
-                if (py < 0 || py >= cells.GetLength(1))
-                    continue;
-
-                var cell = cells[(int)px, (int)py];
-                result.Add(cell);
-            }
-
+				var cell = cells [px, py];
+				result.Add (cell);
+			}
             return result;
         }
 
@@ -140,6 +145,7 @@ namespace Assets.World.Map
                 currentCell = currentCell.CellFrom;
                 counter++;
             }
+			result.Reverse ();
             return result;
         }
 

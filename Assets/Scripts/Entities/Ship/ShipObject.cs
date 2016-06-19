@@ -3,28 +3,27 @@ using System.Collections;
 using Assets.World.WorldObjects;
 using Assets.World;
 using Assets.Utils;
+using Assets.World.Map;
 
 public class ShipObject : MonoBehaviour {
 	private MovingModelBase _model;
+	private MapModel _map;
 	// Use this for initialization
-	void Start () {
-
-	}
 
 	public void Init(WorldModel world)
 	{
+		_map = world.WorldMap;
 		var point = world.WorldMap.GetRandomPoint ();
-		Debug.Log ("start point "+point);
 		_model = new MovingModelBase (world, point);
 	}
 
 	// Update is called once per frame
-	int count = 0;
 	void Update () {
 		transform.position = new Vector3 (_model.X, _model.Y);
-		if (_model.TargetPoint.isEmpty && count == 0) {
-			count++;
-			_model.SetPath (_model.World.WorldMap.GetPath(_model.World.WorldMap.GetCellByPosition(_model.Position), _model.World.WorldMap.GetRandomCell()));
+		if (_model.TargetPoint.isEmpty) {
+			var currentCell = _model.World.WorldMap.GetCellByPosition (_model.Position);
+			var randomCell = _model.World.WorldMap.GetRandomCell ();
+			_model.SetPath (_model.World.WorldMap.GetPath(currentCell, randomCell));
 		}
 		_model.Update ();
 	}

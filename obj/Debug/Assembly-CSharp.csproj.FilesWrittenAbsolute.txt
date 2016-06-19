@@ -11,3 +11,7 @@
 /Users/plariumtest/spaceship/Temp/bin/Debug/Unity.CecilTools.dll
 /Users/plariumtest/spaceship/Temp/bin/Debug/Mono.Cecil.Pdb.dll
 /Users/plariumtest/spaceship/Temp/bin/Debug/Mono.Cecil.Mdb.dll
+/Users/plariumtest/spaceship/Temp/bin/Debug/Assembly-CSharp.dll.mdb
+/Users/plariumtest/spaceship/Temp/bin/Debug/Assembly-CSharp.dll
+/Users/plariumtest/spaceship/obj/Debug/Assembly-CSharp.dll
+/Users/plariumtest/spaceship/obj/Debug/Assembly-CSharp.dll.mdb
