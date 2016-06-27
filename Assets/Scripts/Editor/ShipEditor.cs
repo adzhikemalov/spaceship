@@ -4,20 +4,37 @@ using UnityEditor;
 using System.Collections.Generic;
 using Assets.World.Map;
 using Assets.Utils;
+using System.Text;
 
-public class ShipEditor : EditorWindow {
-    public enum GUIState {
+public class ShipEditor: EditorWindow {
+    
+	public enum GUIState {
         DrawGridParams,
         DrawSelectedCellParams,
         DrawMultipleSelectedCellParam
-    }; 
+    };
 
-
-    [MenuItem("ShipEditor/OpenEditor")]
-    public static void OpenEditor()
-    {
-        EditorWindow.GetWindowWithRect<ShipEditor>(new Rect(0, 0, 870, 600), false, "Ship Editor");
-    }
+	private GUIState _state = GUIState.DrawGridParams;
+	private Texture2D _texture;
+	private int _canvasX = 220;
+	private int _canvasY = 10;
+	private int _canvasWidth = 640;
+	private int _canvasHeight = 480;
+	private Vector2 _mousePos;
+	private float _dragOffsetX = float.NaN;
+	private float _dragOffsetY = float.NaN;
+	private bool _isDragingGrid = false;
+	private List<Vector2> _selectedCells = new List<Vector2>();
+	[SerializeField]
+	private List<CellModel> _cells = new List<CellModel>();  
+	  
+	[MenuItem("ShipEditor/OpenEditor")]
+	public static void OpenEditor()
+	{
+		var instance = EditorWindow.GetWindowWithRect<ShipEditor>(new Rect(0, 0, 870, 600), true, "Ship Editor");
+		instance.ClearCells ();
+		instance.UpdateCells ();
+	}
 
 	public void SaveMap()
 	{
@@ -26,23 +43,31 @@ public class ShipEditor : EditorWindow {
 		map.Cols = _gridCols;
 		map.Rows = _gridRows;
 		var str = JsonUtility.ToJson (map);
+		var cells = SerializeCells();
+		Debug.Log (_cells.Count);
 		Debug.Log (str);
+		Debug.Log (cells);
+	} 
+
+	private string SerializeCells()
+	{
+		StringBuilder sb = new StringBuilder ();
+		sb.Append ("\"cells\":[");
+		foreach (var item in _cells) {
+			sb.Append (item.Serialize());
+		}
+		sb.Append("];"); 
+		return sb.ToString (); 
 	}
 
-    private GUIState _state = GUIState.DrawGridParams;
-    private Texture2D _texture;
-    private int _canvasX = 220;
-    private int _canvasY = 10;
-    private int _canvasWidth = 640;
-    private int _canvasHeight = 480;
-    private Vector2 _mousePos;
-    private float _dragOffsetX = float.NaN;
-    private float _dragOffsetY = float.NaN;
-    private bool _isDragingGrid = false;
-    private List<Vector2> _selectedCells = new List<Vector2>();
-	private List<CellModel> _cells = new List<CellModel>(); 
-    void OnGUI()
-    {        
+	public void ClearCells()
+	{
+		_selectedCells.Clear ();
+		_cells.Clear ();
+	}
+    
+	void OnGUI()
+    {       
 		if (_selectedCells.Count == 1) {
 			_state = GUIState.DrawSelectedCellParams;
 		} else if (_selectedCells.Count > 1) {
@@ -54,9 +79,21 @@ public class ShipEditor : EditorWindow {
 		UpdateCells ();
         DrawUI();
 
-        Event e = Event.current;
-        _mousePos = e.mousePosition;
 
+		Event e = Event.current;
+		_mousePos = e.mousePosition;
+		switch (e.type)
+		{
+			case EventType.keyDown:
+			{
+				if (Event.current.keyCode == (KeyCode.A))
+				{
+					Debug.Log ( SerializeCells());
+				}
+				break;
+			}
+		}
+        
         if (e.button == 1)
         {
             if (_gridRect.Contains(_mousePos))
@@ -90,27 +127,40 @@ public class ShipEditor : EditorWindow {
     private float _gridX = 0;
     private float _gridY = 0;
     private int _gridCols = 5;
-    private int _gridRows = 5;
+    private int _gridRows = 5; 
     private int _cellSize = 20;
     private Rect _gridRect;
-
+	private List<CellModel> _tempList;
 	private void UpdateCells()
 	{
+		Debug.Log (SerializeCells ());
 		if (_cells.Count == _gridCols * _gridRows)
 			return;
-
+		_tempList = new List<CellModel> (_cells);	
+		_cells.Clear (); 
 		for (int i = 0; i < _gridCols; i++) {
 			for (int j = 0; j < _gridRows; j++) {
 				if (!CellExist (i, j))
 					_cells.Add (new CellModel (i, j));
-			}
+				else
+					ReturnToCells (i, j);
+			}   
+		}
+		_tempList.Clear ();
+	}
+
+	private void ReturnToCells(int col, int row)
+	{
+		for (int i = 0; i < _tempList.Count; i++) {
+			if (_tempList [i].Position.x == col && _tempList [i].Position.y == row)
+				_cells.Add (_tempList [i]);
 		}
 	}
 
 	private bool CellExist(int col, int row)
 	{
-		for (int i = 0; i < _cells.Count; i++) {
-			if (_cells [i].Position.x == col && _cells [i].Position.y == row)
+		for (int i = 0; i < _tempList.Count; i++) {
+			if (_tempList[i].Position.x == col && _tempList[i].Position.y == row)
 				return true;
 		}
 		return false;
@@ -142,8 +192,6 @@ public class ShipEditor : EditorWindow {
             case GUIState.DrawGridParams:
             {
 				_texture = (Texture2D)EditorGUILayout.ObjectField("Open texture", _texture, typeof(Texture2D), false);
-				if (_texture)
-					EditorGUI.DrawPreviewTexture(new Rect(_canvasX, _canvasY, _canvasWidth, _canvasHeight), _texture);
                 int.TryParse(EditorGUILayout.TextField("Grid Cols", _gridCols.ToString()), out _gridCols);
                 int.TryParse(EditorGUILayout.TextField("Grid Rows", _gridRows.ToString()), out _gridRows);
                 int.TryParse(EditorGUILayout.TextField("Cell size", _cellSize.ToString()), out _cellSize);
@@ -157,24 +205,46 @@ public class ShipEditor : EditorWindow {
             }
 			case GUIState.DrawSelectedCellParams:
 			{
+				EditorGUILayout.Space ();
+				var layout = EditorGUILayout.BeginHorizontal ();
+				layout.x = 10;
 				var selectedCell = _selectedCells [0];
-				var selectedCellModel = GetCellModel (new Point(selectedCell.x, selectedCell.y));
-				if (GUI.Button (new Rect (new Vector2 (0, 50), new Vector2 (50, 50)), "<")) {
+				var selectedCellModel = GetCellModel (selectedCell.x, selectedCell.y);
+				if (GUI.Button (new Rect (new Vector2 (layout.x + 0, layout.y + 25), new Vector2 (25, 25)), "<")) {
 					selectedCellModel.Walls[(int)WallPosition.Left] = !selectedCellModel.Walls[(int)WallPosition.Left];
 				}
-				if (GUI.Button (new Rect (new Vector2 (25, 0), new Vector2 (50, 50)), "^")) {
+				if (GUI.Button (new Rect (new Vector2 (layout.x + 25, layout.y + 0), new Vector2 (25, 25)), "^")) {
 					selectedCellModel.Walls[(int)WallPosition.Top] = !selectedCellModel.Walls[(int)WallPosition.Top];
 				}
-				if (GUI.Button (new Rect (new Vector2 (50, 50), new Vector2 (50, 50)), ">")) {
+				if (GUI.Button (new Rect (new Vector2 (layout.x + 25, layout.y + 25), new Vector2 (25, 25)), "X")) {
+					selectedCellModel.Enabled = !selectedCellModel.Enabled;
+				}
+				if (GUI.Button (new Rect (new Vector2 (layout.x + 50, layout.y + 25), new Vector2 (25, 25)), ">")) {
 					selectedCellModel.Walls[(int)WallPosition.Right] = !selectedCellModel.Walls[(int)WallPosition.Right];
 				}
-				if (GUI.Button (new Rect (new Vector2 (25, 50), new Vector2 (50, 50)), "v")) {
+				if (GUI.Button (new Rect (new Vector2 (layout.x + 25, layout.y + 50), new Vector2 (25, 25)), "v")) {
 					selectedCellModel.Walls[(int)WallPosition.Bottom] = !selectedCellModel.Walls[(int)WallPosition.Bottom];
+				}
+				EditorGUILayout.EndHorizontal();
+				break; 
+			}
+			case GUIState.DrawMultipleSelectedCellParam: 
+			{
+				EditorGUILayout.Space ();
+				var layout = EditorGUILayout.BeginHorizontal ();
+				layout.x = 10;
+				if (GUI.Button (new Rect (new Vector2 (layout.x + 25, layout.y + 25), new Vector2 (25, 25)), "x")) {
+					foreach (var selectedCell in _selectedCells) {
+						var selectedCellModel = GetCellModel (selectedCell.x, selectedCell.y);
+						selectedCellModel.Enabled = !selectedCellModel.Enabled;
+					}
 				}
 				break;
 			}
 		}
 
+		if (_texture)
+			EditorGUI.DrawPreviewTexture(new Rect(_canvasX, _canvasY, _canvasWidth, _canvasHeight), _texture);
 		EditorGUILayout.Space(); 
 		if (GUI.Button (new Rect (new Vector2 (0, 500), new Vector2 (100, 50)), "SAVE")) {
 			SaveMap ();
@@ -231,13 +301,20 @@ public class ShipEditor : EditorWindow {
             Handles.DrawSolidRectangleWithOutline(new Rect(actualPos.x, actualPos.y, _cellSize, _cellSize), Color.green, Color.cyan);
         }
 		foreach (var cell in _cells) {
+			if (!cell.Enabled)
+			{
+				var actualPos = GetActualCellPosition (new Vector2(cell.Position.x, cell.Position.y));
+				Handles.color = new Color (1,1,1,0.5f);
+				Handles.DrawSolidRectangleWithOutline(new Rect(actualPos.x, actualPos.y, _cellSize, _cellSize), Color.red, Color.white);
+			}
 			DrawWalls (cell);
 		}
         Repaint();
     }
 
-	private CellModel GetCellModel(Point position)
+	private CellModel GetCellModel(float x, float y)
 	{
+		var position = new Point (x, y);
 		foreach (var item in _cells) {
 			if (item.Position.Equals (position))
 				return item;
@@ -248,24 +325,25 @@ public class ShipEditor : EditorWindow {
 	private void DrawWalls(CellModel cell)
 	{
 		Vector2 from, to;
+		Handles.color = Color.black;
 		if (cell.Walls [(int)WallPosition.Left]) {
-			from = new Vector2 (cell.Position.x * _cellSize + _gridX - _cellSize/2,  cell.Position.y * _cellSize + _gridY - _cellSize/2);
-			to = new Vector2 (cell.Position.x * _cellSize + _gridX - _cellSize/2,  cell.Position.y * _cellSize + _gridY + _cellSize/2);
+			from = new Vector2 (cell.Position.x * _cellSize + _gridX,  cell.Position.y * _cellSize + _gridY);
+			to = new Vector2 (cell.Position.x * _cellSize + _gridX,  cell.Position.y * _cellSize + _gridY + _cellSize);
 			Handles.DrawLine (from, to);
 		}
 		if (cell.Walls [(int)WallPosition.Top]) {
-			from = new Vector2 (cell.Position.x * _cellSize + _gridX - _cellSize/2,  cell.Position.y * _cellSize + _gridY - _cellSize/2);
-			to = new Vector2 (cell.Position.x * _cellSize + _gridX + _cellSize/2,  cell.Position.y * _cellSize + _gridY - _cellSize/2);
+			from = new Vector2 (cell.Position.x * _cellSize + _gridX,  cell.Position.y * _cellSize + _gridY);
+			to = new Vector2 (cell.Position.x * _cellSize + _gridX + _cellSize,  cell.Position.y * _cellSize + _gridY);
 			Handles.DrawLine (from, to);
 		}
 		if (cell.Walls [(int)WallPosition.Right]) {
-			from = new Vector2 (cell.Position.x * _cellSize + _gridX + _cellSize/2,  cell.Position.y * _cellSize + _gridY - _cellSize/2);
-			to = new Vector2 (cell.Position.x * _cellSize + _gridX + _cellSize/2,  cell.Position.y * _cellSize + _gridY + _cellSize/2);
+			from = new Vector2 (cell.Position.x * _cellSize + _gridX + _cellSize,  cell.Position.y * _cellSize + _gridY);
+			to = new Vector2 (cell.Position.x * _cellSize + _gridX + _cellSize,  cell.Position.y * _cellSize + _gridY + _cellSize);
 			Handles.DrawLine (from, to);
 		}
 		if (cell.Walls [(int)WallPosition.Bottom]) {
-			from = new Vector2 (cell.Position.x * _cellSize + _gridX - _cellSize/2,  cell.Position.y * _cellSize + _gridY + _cellSize/2);
-			to = new Vector2 (cell.Position.x * _cellSize + _gridX + _cellSize/2,  cell.Position.y * _cellSize + _gridY + _cellSize/2);
+			from = new Vector2 (cell.Position.x * _cellSize + _gridX,  cell.Position.y * _cellSize + _gridY + _cellSize);
+			to = new Vector2 (cell.Position.x * _cellSize + _gridX + _cellSize,  cell.Position.y * _cellSize + _gridY + _cellSize);
 			Handles.DrawLine (from, to);
 		}
 	}

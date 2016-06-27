@@ -11,10 +11,11 @@ namespace Assets.Utils
     {
     }
 
-    public struct Point
+	[Serializable]
+	public struct Point
     {
         public static Point Empty = new Point(float.NaN, float.NaN);
-        public readonly float x, y;
+		public float x, y;
 
         public Point(float px, float py)
         {
