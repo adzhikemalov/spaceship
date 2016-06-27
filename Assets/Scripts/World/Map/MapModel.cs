@@ -13,62 +13,74 @@ namespace Assets.World.Map
 		public static bool EnableDiagonalMovement;
         public int Cols;
         public int Rows;
-		public float CellSize;
+		public int CellSize;
+        public List<CellModel> Cells;
+        class MapData
+        {
+            public int Cols;
+            public int Rows;
+            public List<CellModel> Cells;            
+        }
 
-        [SerializeField]
-        public CellModel[,] MapCells;
-
-		public void Init(int cols, int rows, float cellSize)
+        public void Init(int cols, int rows, int cellSize)
 		{
 			Cols = cols;
 			Rows = rows;
 			CellSize = cellSize;
 
-			MapCells = CreateCellsMap (Cols, Rows);
-			FillMapWithCells (MapCells);
+            Cells = new List<CellModel>();
 		}
+
+        public static CellModel GetCell(List<CellModel> cells, int col, int row)
+        {
+            foreach (var cell in cells)
+            {
+                if (cell.Position.x == col && cell.Position.y == row)
+                    return cell;
+            }
+            return null;
+        }
+
+        public CellModel GetCell(int col, int row)
+        {
+            foreach (var cell in Cells)
+            {
+                if (cell.Position.x == col && cell.Position.y == row)
+                    return cell;
+            }
+            return null;
+        }
 
 		public CellModel GetCellByPosition(Point position)
 		{
 			var cid = (int)(position.x / CellSize);
 			var rid = (int)(position.y / CellSize);
-			return MapCells [cid, rid];
+			return GetCell(cid, rid);
 		}
 
 
 		public CellModel GetRandomCell()
 		{
 			var rnd = new System.Random();
-			var cid = rnd.Next (MapCells.GetLength (0));
-			var rid = rnd.Next (MapCells.GetLength (1));
-			return MapCells[cid, rid];
+			var cid = rnd.Next (Cols);
+			var rid = rnd.Next (Rows);
+			return GetCell(cid, rid);
 		}
 
 		public Point GetRandomPoint()
 		{
 			var rnd = new System.Random();
-			var cid = rnd.Next (MapCells.GetLength (0));
-			var rid = rnd.Next (MapCells.GetLength (1));
-			return MapCells[cid, rid].Position;
+			var cid = rnd.Next (Cols);
+			var rid = rnd.Next (Rows);
+			return GetCell(cid, rid).Position;
 		}
 
         public List<CellModel> GetPath(CellModel start, CellModel end)
         {
-            return GetPath(MapCells, start, end);
+            return GetPath(new MapData() { Cols = Cols, Rows = Rows, Cells = Cells }, start, end);
         }
 
-        private static void FillMapWithCells(CellModel[,] map)
-        {
-            for (int i = 0; i < map.GetLength(0); i++)
-            {
-                for (int j = 0; j < map.GetLength(1); j++)
-                {
-                    map[i,j] = new CellModel(i, j);
-                }
-            }
-        }
-
-        private static List<CellModel> GetPath(CellModel[,] cells, CellModel start, CellModel end)
+        private static List<CellModel> GetPath(MapData cells, CellModel start, CellModel end)
         {
             var openSet = new Collection<CellModel>();
             var closedSet = new Collection<CellModel>();
@@ -106,7 +118,7 @@ namespace Assets.World.Map
             return new List<CellModel>();
         }
 
-        private static List<CellModel> GetNeighbours(CellModel currentCell, CellModel[,] cells)
+        private static List<CellModel> GetNeighbours(CellModel currentCell, MapData cells)
         {
             var result = new List<CellModel>();
 			int dx, dy;
@@ -123,12 +135,12 @@ namespace Assets.World.Map
 				px = (int)currentCell.Position.x + dx;
 				py = (int)currentCell.Position.y + dy;
 
-				if (px < 0 || px >= cells.GetLength (0))
+				if (px < 0 || px >= cells.Cols)
 					continue;
-				if (py < 0 || py >= cells.GetLength (1))
+				if (py < 0 || py >= cells.Rows)
 					continue;
 
-				var cell = cells [px, py];
+				var cell = GetCell(cells.Cells, px, py);
 				result.Add (cell);
 			}
             return result;
@@ -155,11 +167,7 @@ namespace Assets.World.Map
             var dy = secondCell.Position.y - firstCell.Position.y;
             return (float)Math.Sqrt(dx*dx + dy*dy);
         }
-
-        private static CellModel[,] CreateCellsMap(int width, int heigth)
-        {
-            return new CellModel[width,heigth];
-        }
+       
     }
 }
     

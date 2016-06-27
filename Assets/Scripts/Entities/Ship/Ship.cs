@@ -8,10 +8,10 @@ public class Ship : MonoBehaviour {
 
 	private ShipGrid _grid;
     private List<ShipObject> _crew;
-	private WorldModel _model;
+	private ShipModel _model;
 	// Use this for initialization
 	void Start () {
-		_model = new WorldModel ();
+		_model = new ShipModel ();
         _grid = transform.GetComponent<ShipGrid>();
 		_grid.InitGrid(_model);
         _crew = new List<ShipObject>();

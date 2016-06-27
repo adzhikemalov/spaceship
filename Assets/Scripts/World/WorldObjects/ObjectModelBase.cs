@@ -11,17 +11,17 @@ namespace Assets.World.WorldObjects
         public float Y {
             get { return Position.y; }
         }
-		public WorldModel World{get { return _world; }}
+		public ShipModel Ship{get { return _ship; }}
 
         public Point Position; 
-		protected readonly WorldModel _world;
+		protected readonly ShipModel _ship;
 
-        public ObjectModelBase(WorldModel world, float x, float y)
+        public ObjectModelBase(ShipModel ship, float x, float y)
         {
-            _world = world;
+            _ship = ship;
             Position = new Point(x, y);
-            if(_world == null)
-                Debug.Log("No world specified");
+            if(_ship == null)
+                Debug.Log("No ship specified");
         }
 
         public virtual void Update () {

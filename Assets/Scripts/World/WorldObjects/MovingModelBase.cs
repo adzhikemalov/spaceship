@@ -7,13 +7,13 @@ namespace Assets.World.WorldObjects
 {
     public class MovingModelBase : ObjectModelBase
     {
-        public float Speed = 0.05f;
+        public float Speed = 1f;
 		public Point TargetPoint {get { return _targetPoint; }}
 
 		private List<CellModel> _path;
         private Point _targetPoint = Point.Empty;
 
-        public MovingModelBase(WorldModel world, Point point) : base(world, point.x, point.y)
+        public MovingModelBase(ShipModel world, Point point) : base(world, point.x, point.y)
         {
 
         }
@@ -23,7 +23,7 @@ namespace Assets.World.WorldObjects
 			_path = path;
 			var nextCell = _path [0];
 			_path.RemoveAt (0);
-			_targetPoint = nextCell.Position;
+			_targetPoint = nextCell.Position * _ship.ShipMap.CellSize;
 		}
 
         public void MoveToPoint(Point target)
@@ -41,7 +41,7 @@ namespace Assets.World.WorldObjects
 					} else {
 						var nextCell = _path [0];
 						_path.RemoveAt (0);
-						_targetPoint = nextCell.Position;
+						_targetPoint = nextCell.Position * _ship.ShipMap.CellSize;
 					}
 				}
 			}

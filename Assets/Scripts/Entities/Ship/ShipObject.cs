@@ -10,20 +10,22 @@ public class ShipObject : MonoBehaviour {
 	private MapModel _map;
 	// Use this for initialization
 
-	public void Init(WorldModel world)
+	public void Init(ShipModel world)
 	{
-		_map = world.WorldMap;
-		var point = world.WorldMap.GetRandomPoint ();
+		_map = world.ShipMap;
+		var point = world.ShipMap.GetRandomPoint ();
 		_model = new MovingModelBase (world, point);
 	}
 
 	// Update is called once per frame
 	void Update () {
+        if (_model == null) return;
+
 		transform.position = new Vector3 (_model.X, _model.Y);
 		if (_model.TargetPoint.isEmpty) {
-			var currentCell = _model.World.WorldMap.GetCellByPosition (_model.Position);
-			var randomCell = _model.World.WorldMap.GetRandomCell ();
-			_model.SetPath (_model.World.WorldMap.GetPath(currentCell, randomCell));
+			var currentCell = _map.GetCellByPosition (_model.Position);
+			var randomCell =_map.GetRandomCell ();
+			_model.SetPath (_map.GetPath(currentCell, randomCell));
 		}
 		_model.Update ();
 	}
