@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace Assets.World.Map
+namespace World.Map
 {
 	public enum WallPosition
 	{
@@ -15,7 +15,7 @@ namespace Assets.World.Map
 	[System.Serializable]
     public class CellModel
     {
-
+        public static CellModel UndefinedCell = new CellModel(-1, -1);
 		public Point Position;
         public CellModel CellFrom { get; set; }
         
@@ -24,7 +24,7 @@ namespace Assets.World.Map
         public float fCost {get { return hCost + gCost; }}
 
 		public bool Enabled = true;
-		public bool[] Walls = new bool[4]; 
+        public int[] Walls = new int[4]; 
 
         public CellModel(int column, int row)
         {

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using UnityEngine;
 using Assets.Utils;
 
-namespace Assets.World.Map
+namespace World.Map
 {
     [Serializable]
     public class MapModel
@@ -29,8 +28,15 @@ namespace Assets.World.Map
 			CellSize = cellSize;
 
             Cells = new List<CellModel>();
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    Cells.Add(new CellModel(i, j));
+                }
+            }
 		}
-
+        
         public static CellModel GetCell(List<CellModel> cells, int col, int row)
         {
             foreach (var cell in cells)
@@ -38,7 +44,7 @@ namespace Assets.World.Map
                 if (cell.Position.x == col && cell.Position.y == row)
                     return cell;
             }
-            return null;
+            return CellModel.UndefinedCell;
         }
 
         public CellModel GetCell(int col, int row)
@@ -48,9 +54,9 @@ namespace Assets.World.Map
                 if (cell.Position.x == col && cell.Position.y == row)
                     return cell;
             }
-            return null;
+            return CellModel.UndefinedCell;
         }
-
+        
 		public CellModel GetCellByPosition(Point position)
 		{
 			var cid = (int)(position.x / CellSize);
@@ -167,7 +173,6 @@ namespace Assets.World.Map
             var dy = secondCell.Position.y - firstCell.Position.y;
             return (float)Math.Sqrt(dx*dx + dy*dy);
         }
-       
     }
 }
     

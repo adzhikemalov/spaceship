@@ -1,7 +1,7 @@
 ﻿using Assets.Utils;
-using UnityEngine;
+using Assets.World;
 
-namespace Assets.World.WorldObjects
+namespace WorldObjects
 {
     public class ObjectModelBase
     {
@@ -11,17 +11,15 @@ namespace Assets.World.WorldObjects
         public float Y {
             get { return Position.y; }
         }
-		public ShipModel Ship{get { return _ship; }}
+		public WorldModel World{get { return _world; }}
 
         public Point Position; 
-		protected readonly ShipModel _ship;
+		protected readonly WorldModel _world;
 
-        public ObjectModelBase(ShipModel ship, float x, float y)
+        public ObjectModelBase(WorldModel world, float x, float y)
         {
-            _ship = ship;
+            _world = world;
             Position = new Point(x, y);
-            if(_ship == null)
-                Debug.Log("No ship specified");
         }
 
         public virtual void Update () {

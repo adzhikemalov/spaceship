@@ -1,9 +1,10 @@
 ﻿using Assets.Utils;
-using UnityEngine;
 using System.Collections.Generic;
-using Assets.World.Map;
+using Assets.World;
+using World.Map;
+using WorldObjects;
 
-namespace Assets.World.WorldObjects
+namespace World.WorldObjects
 {
     public class MovingModelBase : ObjectModelBase
     {
@@ -13,7 +14,7 @@ namespace Assets.World.WorldObjects
 		private List<CellModel> _path;
         private Point _targetPoint = Point.Empty;
 
-        public MovingModelBase(ShipModel world, Point point) : base(world, point.x, point.y)
+        public MovingModelBase(WorldModel world, Point point) : base(world, point.x, point.y)
         {
 
         }
@@ -21,9 +22,9 @@ namespace Assets.World.WorldObjects
 		public void SetPath(List<CellModel> path)
 		{
 			_path = path;
-			var nextCell = _path [0];
-			_path.RemoveAt (0);
-			_targetPoint = nextCell.Position * _ship.ShipMap.CellSize;
+			var nextCell = _path[0];
+			_path.RemoveAt(0);
+			_targetPoint = nextCell.Position * _world.WorldMap.CellSize;
 		}
 
         public void MoveToPoint(Point target)
@@ -41,7 +42,7 @@ namespace Assets.World.WorldObjects
 					} else {
 						var nextCell = _path [0];
 						_path.RemoveAt (0);
-						_targetPoint = nextCell.Position * _ship.ShipMap.CellSize;
+                        _targetPoint = nextCell.Position * _world.WorldMap.CellSize;
 					}
 				}
 			}

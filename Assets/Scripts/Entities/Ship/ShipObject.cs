@@ -1,9 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Assets.World.WorldObjects;
-using Assets.World;
-using Assets.Utils;
-using Assets.World.Map;
 
 public class ShipObject : MonoBehaviour {
 	private MovingModelBase _model;
